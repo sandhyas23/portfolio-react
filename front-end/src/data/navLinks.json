@@ -1,0 +1,17 @@
+[
+  {
+    "path": "/",
+    "category": "home"
+
+  },
+  {
+    "category": "plastic",
+    "path": "/plastic",
+    "subCategories": ["kitchen","living room"]
+  },
+  {
+    "path": "/diy",
+    "category" : "diy",
+    "subCategories": ["sewing","cardboard"]
+  }
+]

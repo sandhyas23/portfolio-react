@@ -1,0 +1,144 @@
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding-left: 50px;
+  padding-right: 20px;
+  overflow: hidden;
+  background-color: lightgrey;
+
+}
+
+.nav > li {
+  float: left;
+  display: block;
+  color: dimgrey;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: underline;
+  font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+}
+
+li:hover:not(.active) {
+  background-color: whitesmoke;
+}
+
+.selected {
+  color: lightseagreen;
+}
+
+nav .login{
+  float:right;
+  margin-right: 10px;
+}
+.grid-container {
+  display: grid;
+  grid-template-areas:
+          'main'
+          'footer';
+}
+.main{
+  padding:10px;
+}
+
+.grid-container > div {
+  text-align: center;
+}
+
+.footer{
+  background-color: dimgrey;
+  position: absolute;
+  bottom: 0;
+  width:100%;
+  height: 6rem;
+  color:white;
+}
+
+.page-container {
+  position: relative;
+  min-height: 100vh;
+}
+
+.content-wrap {
+  padding-bottom: 6rem;    /* Footer height */
+}
+
+.addItem{
+  float: right;
+  margin-right: 20px;
+  color: coral;
+  font-size: 16px;
+  background-color: white;
+  border: solid;
+}
+.Modal {
+  position: absolute;
+  top: 80px;
+  left: 200px;
+  right: 200px;
+  bottom: 80px;
+  background-color: white;
+}
+
+.Overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: lightgrey;
+}
+.grid-c {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  padding: 2rem;
+  grid-gap: 50px;
+}
+.grid-i {
+  border: 1px solid;
+  text-align: center;
+}
+.column {
+  float: left;
+  width: 50%;
+  height: 200px;
+
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+.itemHeading{
+  font-family: "Comic Sans MS", sans-serif;
+  font-weight: bold;
+}
+.itemName{
+  font-style: italic;
+}
+.footerIcons {
+  display: flex;
+  justify-content: center;
+
+}
+.icons{
+  padding: 10px;
+}
+input[type=text], select {
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+button {
+  background-color: #45a049;
+}
+
+
+
+
+
+
