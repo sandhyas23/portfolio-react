@@ -7,11 +7,42 @@
   {
     "category": "plastic",
     "path": "/plastic",
-    "subCategories": ["kitchen","living room"]
+    "subCategories": ["kitchen","living room"],
+    "items:" : []
   },
   {
     "path": "/diy",
     "category" : "diy",
-    "subCategories": ["sewing","cardboard"]
+    "subCategories": ["sewing","cardboard"],
+    "items": [
+      {
+        "item": "face mask",
+        "sub-category" : "sewing",
+        "content":"sticha face mask in markdown",
+        "uploaded on": "2019-11-01T19:29:15.216Z",
+        "path": "/diy/facemask"
+      },
+      {
+        "item": "sofa caddy",
+        "sub-category" : "sewing",
+        "content":"sticha face mask in markdown",
+        "uploaded on": "2019-11-01T19:29:15.216Z",
+        "path": "/diy/sofacaddy"
+      },
+      {
+        "item": "bathroom ",
+        "sub-category" : "sewing",
+        "content":"sticha face mask in markdown",
+        "uploaded on": "2019-11-01T19:29:15.216Z",
+        "path": "/diy/bathroom"
+      },
+      {
+        "item": "corner shelf",
+        "sub-category" : "cardboard",
+        "content":"sticha face mask in markdown",
+        "uploaded on": "2019-11-01T19:29:15.216Z",
+        "path": "/diy/cornershelf"
+      }
+    ]
   }
 ]
