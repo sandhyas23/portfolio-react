@@ -1,15 +1,20 @@
+// Portfolio
+// Author: Sandhya Sankaran
+
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 import {BrowserRouter as Router, Switch,Route, Link,NavLink,Redirect } from 'react-router-dom';
 import Child from './Child'
+import Contact from "./Contact";
 import navLinks from './data/navLinks';
 import ReactModal from "react-modal";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { fab } from '@fortawesome/free-brands-svg-icons';
 import { library } from "@fortawesome/fontawesome-svg-core"
 import {faTrash,faPenSquare} from "@fortawesome/free-solid-svg-icons";
-import { faLinkedin,faPinterest,faGithub,faFacebook,faTwitter,faInstagram } from '@fortawesome/free-brands-svg-icons';
+import img from "./data/default.jpg";
+import message from './data/message.png'
 library.add(fab);
 
 const socialIcons= ["Linkedin","Pinterest","Facebook","Github","Twitter","Instagram"]
@@ -19,10 +24,12 @@ export default class App extends React.Component{
     super(props);
     this.state={navLinks:[],  showModal: false, itemName:"", subCategory:"", subCategoryLists:[],
         editSubCategory:false, role:"user", user:null,items:[],
-        addedIcons:[], showSocialModal:false,link:"", social:socialIcons[0]};
+        addedIcons:[], showSocialModal:false,link:"", social:socialIcons[0], location:window.location.pathname,
+        showComment:false};
 
   }
   componentDidMount() {
+      console.log("app mounted",window.location.href);
       let _this = this;
       fetch('/navLinks',{
           method: "GET",
@@ -107,7 +114,7 @@ export default class App extends React.Component{
   }
 
   handleCloseModal () {
-    this.setState({ showModal: false, itemName:"", subCategoryLists:[], editSubCategory:false, showSocialModal:false });
+    this.setState({ showModal: false, itemName:"", subCategoryLists:[], editSubCategory:false, showSocialModal:false, showComment:false });
   }
 
   addNewItem(){
@@ -420,10 +427,14 @@ export default class App extends React.Component{
     }
 
 
+    changeLocation(){
+      this.setState({location:window.location.pathname})
+    }
+
 
 
   render(){
-    //console.log("addedicons",this.state.addedIcons);
+   // console.log("uri in app",window.location);
     return(
         <Router>
           <div className={"grid-container "}>
@@ -435,7 +446,7 @@ export default class App extends React.Component{
                             return cat.category === "home"
                         }) !== undefined ?
                             <li key={`navhome`}>
-                                <NavLink exact to={'/home'} activeClassName="selected">Home
+                                <NavLink className={"links"} exact to={'/home'} activeStyle={{ color: 'lightseagreen' }}>Home
                                 </NavLink>
                             </li>
                             :
@@ -448,7 +459,7 @@ export default class App extends React.Component{
                           return category.category !== "home"
                       }).map((nav,index,array) =>{
                     return <li key={`nav${nav.category}${index}`}>
-                    <NavLink exact to={nav.path} activeClassName="selected">{nav.category[0].toUpperCase() + nav.category.slice(1)}
+                    <NavLink className={"links"} exact to={nav.path} activeStyle={{ color: 'lightseagreen' }}>{nav.category[0].toUpperCase() + nav.category.slice(1)}
                     </NavLink>
                         {nav.category === "home" ? null :
                                 this.state.role === "admin" ? <span>
@@ -467,7 +478,8 @@ export default class App extends React.Component{
                 }
                   {this.state.role === "admin" ?
                       <li>
-                          <button  onClick={()=>this.handleOpenModal("addCategory",null)}>
+                          <button  onClick={()=>this.handleOpenModal("addCategory",null)}
+                          style={{fontSize: 15}}>
                               Add Category
                           </button>
                       </li>
@@ -476,34 +488,45 @@ export default class App extends React.Component{
                   }
 
                   {this.state.user === null ?
-                      <li className={"login"}>
-                          <a href={"http://localhost:3000/login/auth/google"}>Login</a>
+                      <li className={"login links"}>
+                          <a href={`http://sandhyasankaran.com/login/auth/google/?returnTo=${this.state.location}`}>Login</a>
                       </li> :
-                      <li className={"login"}>
+                      <li className={"login "}>
+                          <img
+                              className="mr-3 bg-light loginImage"
+                              width="30"
+                              height="30"
+                              src={this.state.user.image}
+                              alt={this.state.user.displayName}
+                          />
                           {`Welcome, ${this.state.user.displayName} `}
-                      <a href={"http://localhost:3000/login/logout"}>Logout</a>
+
+                      <a href={"http://sandhyasankaran.com/login/logout"}>Logout</a>
                       </li>
                   }
 
               </ul>
             </nav>
 
-            <main className={"main content-wrap"}>
+                <main className={"main content-wrap"}>
               {this.AddLink()}
               {this.showSocialModal()}
+              <Switch>
+                  <Route exact path='/' component={()=>(<Redirect to='/home'/>)}/>
+                  <Route path="/:id" render={(props) => <Child {...props} navLinks={this.state.navLinks}
+                                                           role={this.state.role} user={this.state.user}
+                                                           changeLocation={()=>this.changeLocation()}
+                                                           currentLocation={this.state.location}/>
+                  }
+                  />
+              </Switch>
+                    {this.state.showComment ? <Contact showComment={this.state.showComment} closeModal={()=>this.handleCloseModal()}/> :null}
 
-
-            <Switch>
-              <Route exact path='/'
-                     component={()=>(<Redirect to='/home'/>)}/>
-              <Route path="/:id" render={(props) => <Child {...props} navLinks={this.state.navLinks} role={this.state.role} user={this.state.user}/> } />
-                {/*<Route path="*">*/}
-                {/*    component={()=>(<Redirect to='/home'/>)}/>*/}
-                {/*</Route>*/}
-            </Switch>
             </main>
 
             <footer className={"footer"}>
+                <img className={"lmessage"} src={message} onClick={()=>this.setState({showComment:!this.state.showComment})}/>
+
                 <div className="container">
 
                     <ul className="footerIcons">
@@ -521,7 +544,7 @@ export default class App extends React.Component{
                                      {
                                          this.state.role === "admin" ?
                                              <FontAwesomeIcon style={{"marginLeft":3}}
-                                                              onClick={()=>this.handleDeleteSocialIcon(element)} icon={faTrash}/>
+                                                              onClick={()=>this.handleDeleteSocialIcon(element)} icon={faTrash} color={"black"}/>
                                                               :
                                              null
 
@@ -532,21 +555,28 @@ export default class App extends React.Component{
                           }) :
                             null
                         }
+
                         {this.state.role === "admin" ?
                             <li>
-                                <button onClick={()=>this.handleSocial()}> Add Social icon</button>
+                                <button style={{fontSize: 15, marginTop:15}}
+                                        onClick={()=>this.handleSocial()}> Add Social icon</button>
                             </li>
                             :
                             null
                         }
 
                     </ul>
+
                 </div>
 
 
-                <div className="footer-copyright text-center py-3">© 2020 Copyright:
-                     Sandhya Sankaran
+                <div>
+                    <span>
+                        © 2020 Copyright: Sandhya Sankaran
+                    </span>
+
                 </div>
+
 
             </footer>
 

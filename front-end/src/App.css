@@ -4,7 +4,7 @@ ul {
   padding-left: 50px;
   padding-right: 20px;
   overflow: hidden;
-  background-color: lightgrey;
+  background-color: #eeeeee;
 
 }
 
@@ -18,17 +18,19 @@ ul {
   font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
 }
 
-li:hover:not(.active) {
-  background-color: whitesmoke;
-}
-
-.selected {
+a:hover:not(.active) {
   color: lightseagreen;
 }
 
+
+
+.links{
+    color: dimgrey;
+}
 nav .login{
-  float:right;
-  margin-right: 10px;
+    float:right;
+    margin-right: 10px;
+    color: dimgrey;
 }
 
 nav{
@@ -95,18 +97,20 @@ nav{
 }
 .grid-c {
   display: grid;
-  grid-template-columns: auto auto auto;
-  padding: 2rem;
-  grid-gap: 50px;
+  grid-template-columns: auto auto ;
+  padding: 6rem;
+  grid-gap: 60px;
 }
 .grid-i {
-  border: 1px solid;
+
   text-align: center;
 }
 .column {
+    text-align: left;
   float: left;
   width: 50%;
-  height: 200px;
+  height: 220px;
+
 
 }
 
@@ -117,11 +121,14 @@ nav{
   clear: both;
 }
 .itemHeading{
-  font-family: "Comic Sans MS", sans-serif;
-  font-weight: bold;
+    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    margin-left: 20px;
+    color: dimgrey;
 }
 .itemName{
-  font-style: italic;
+    font-style: italic;
+    color: lightseagreen;
+    font-weight: bold;
 }
 .footerIcons {
   display: flex;
@@ -140,7 +147,10 @@ input[type=text], select {
   box-sizing: border-box;
 }
 button {
-  background-color: lightskyblue;
+  background-color: lightseagreen;
+    border-radius: 4px;
+    font-size: 20px;
+    color: white;
 }
 
 
@@ -156,6 +166,9 @@ button {
 }
 .mr-3, .mx-3 {
     margin-right: 1rem!important;
+}
+.ml-3 {
+    margin-left: 1rem!important;
 }
 .rounded {
     border-radius: .25rem!important;
@@ -245,13 +258,214 @@ button {
 
 }
 .homeArticle{
-    padding-top:7rem;
+    margin-right: 10%;
+    margin-left: 10%;
     bottom:7rem;
     overflow:auto;
     min-height:330px;
-    max-width:900px;
+    max-width:1000px;
     min-width:200px;
-    border: dimgrey solid;
+}
+
+
+.ContactModal {
+    position: absolute;
+    overflow: auto;
+    top: 10px;
+    width: 400px;
+    right: 10px;
+    height: 600px;
+    bottom: 80px;
+    background-color: lightgrey;
+    color: black;
+}
+
+.ContactOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+}
+.messageHeader{
+    color: royalblue;
+    margin-top: 0;
+    height: 50px;
+    font-family: Arial;
+}
+
+.contactInput {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: vertical;
+}
+
+.contactLabel {
+    padding: 12px 12px 12px 0;
+    display: inline-block;
+}
+
+.contactSubmit {
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    float: right;
+}
+
+.contactSubmit:hover {
+    background-color: #45a049;
+}
+
+.contactDiv {
+    margin-left: 2rem;
+
+    border-radius: 5px;
+    padding: 20px;
+}
+
+.col-75 {
+    margin: 20px;
+
+
+}
+
+/* Clear floats after the columns */
+.contactRow:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+
+.contact{
+    color: white;
+}
+
+.articleNames{
+    color:black;
+}
+.loginImage{
+    border-radius: 50%
+}
+.mobileLikeView{
+    overflow:hidden;
+    min-height:10px;
+    max-width:200px;
+    min-width:40px;
+    width:5px;
+    float:left;
+    position:fixed;
+    padding-left:40px;
+}
+.mobileArticleView{
+    overflow: auto;
+    min-height:330px;
+    max-width:1000px;
+    min-width:100px;
+    margin-left:200px
+}
+
+.commentDiv{
+    margin-right: 10px;
+    margin-left:200px ;
+    width:800px;
+}
+
+
+.lmessage{
+    position: fixed;
+    bottom: 20px;
+    right: 50px;
+    height: 50px;
+
+}
+
+/*!* Responsive layout - when the screen is less than 600px wide, make the two columns stack on top of each other instead of next to each other *!*/
+@media screen and (max-width: 700px) {
+
+    .grid-c {
+        display: grid;
+        grid-template-columns: auto ;
+        padding: 2rem;
+        grid-gap: 40px;
+    }
+    .col-25, .col-75 {
+        width: 100%;
+        margin-top: 0;
+    }
+    .contactDiv {
+        margin-left: 1rem;
+        margin-right: 1rem;
+        border-radius: 5px;
+        background-color: #f2f2f2;
+        padding: 10px;
+    }
+    .contactTextArea{
+        width: 17rem;
+    }
+
+    .mobileLikeView{
+        overflow:auto;
+        min-height:10px;
+
+        max-width:10px;
+        min-width:20px;
+        width:5px;
+        float:left;
+        position:fixed;
+        font-size: 0.5rem;
+
+    }
+    .mobileArticleView{
+        overflow: auto;
+        min-height:330px;
+        max-width:400px;
+        min-width:100px;
+        margin-left:70px
+    }
+
+
+    .commentDiv{
+        width:300px;
+        margin:0 auto;
+    }
+
+    .lmessage{
+        position: fixed;
+        bottom: 10px;
+        right: 5px;
+        height: 30px;
+
+    }
+
+    .ContactModal {
+        position: absolute;
+        overflow: auto;
+        top: 10px;
+        width: 340px;
+        right: 10px;
+        height: 500px;
+        bottom: 80px;
+        background-color: lightgrey;
+        color: black;
+    }
+
+    .contactInput {
+        width: 85%;
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        resize: vertical;
+    }
+
+
+
 }
 
 

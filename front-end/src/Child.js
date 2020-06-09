@@ -1,3 +1,6 @@
+// Portfolio
+// Author: Sandhya Sankaran
+
 import React from 'react';
 import ReactCommonmark from 'react-commonmark';
 import {BrowserRouter as Router, Switch,Route, Link,NavLink,Redirect,useLocation } from 'react-router-dom';
@@ -24,6 +27,9 @@ export default class Child extends React.Component{
   }
 
   componentDidMount() {
+      console.log("child mounted",window.location.href);
+      let user = this.props.user;
+      let likeFound = undefined;
       let _this = this;
       fetch('/navLinks',{
           method: "GET",
@@ -57,7 +63,29 @@ export default class Child extends React.Component{
           },
       }).then(response => response.json()).then(data =>{
           if(data !== undefined){
-              _this.setState({allData:data.commentsAndLikes})
+
+              //console.log(user);
+              let comments = data.commentsAndLikes.find((element,index,array)=>{
+                  return element.article === this.props.location.pathname.split("/")[2];
+              });
+
+
+              if(comments === undefined){
+                  _this.setState({allData:data.commentsAndLikes})
+              }
+              else{
+                  if(user !== null){
+                      console.log(user.googleId);
+                      likeFound = comments.likes.find((el,index,arr)=>{
+                          console.log(el,user.googleId);
+                          return el === user.googleId
+                      })
+                  }
+                  _this.setState({allData:data.commentsAndLikes, comments:comments.comments,likes:comments.likes,
+                          liked: likeFound !== undefined})
+
+              }
+
           }
           else{
               _this.setState({allData:[]})
@@ -67,24 +95,58 @@ export default class Child extends React.Component{
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-      let _this = this;
-      fetch(`/comments/${this.state.id}`, {
-          method:'GET',
-          headers: {
-              "Content-type": "application/json"
-          },
-      }).then(response => response.json()).then(data =>{
-          if(data !== undefined){
-              _this.setState({allData:data.commentsAndLikes})
-          }
-          else{
-              _this.setState({allData:[]})
-          }
+      console.log("child updated",window.location.href);
 
-      })
+      if(window.location.pathname !== this.props.currentLocation){
+          this.props.changeLocation();
+      }
+
+      let user = this.props.user;
+      let likeFound = undefined;
+
+      if(this.state.id !== prevState.id){
+          let _this = this;
+          fetch(`/comments/${this.state.id}`, {
+              method:'GET',
+              headers: {
+                  "Content-type": "application/json"
+              },
+          }).then(response => response.json()).then(data =>{
+              if(data !== undefined){
+                  let comments = data.commentsAndLikes.find((element,index,array)=>{
+                      return element.article === this.props.location.pathname.split("/")[2];
+                  });
+
+
+                  if(comments === undefined){
+
+                      //console.log(user.googleId);
+                      _this.setState({allData:data.commentsAndLikes})
+                  }
+                  else{
+                      if(user !== null){
+                          console.log(user.googleId);
+                          likeFound = comments.likes.find((el,index,arr)=>{
+                              return el === user.googleId
+                          })
+                      }
+                      _this.setState({allData:data.commentsAndLikes, comments:comments.comments,likes:comments.likes,
+                          liked: likeFound !== undefined})
+
+                  }
+
+              }
+              else{
+                  _this.setState({allData:[]})
+              }
+
+          })
+      }
+
   }
 
   static getDerivedStateFromProps(props,state) {
+
       if (props.match.params.id === state.id) {
           return null;
       }
@@ -513,7 +575,9 @@ export default class Child extends React.Component{
               //console.log(data);
               if(!data.success){
                   alert(data.message);
-
+              }
+              else{
+                  _this.setState({comment:""});
               }
           })
       }
@@ -546,12 +610,45 @@ export default class Child extends React.Component{
         this.setState({viewArticle: true});
     }
 
+    deleteComment(index, article){
+      if(window.confirm("Are you sure?")){
+          let user = this.props.user;
+          if(user === null){
+              alert("Login to comment");
+          }
+          else{
+
+              let commentDetails = {profileId:user.googleId,name:user.displayName,image:user.image,comment:this.state.comment,
+                  date:new Date().toISOString()}
+
+              this.state.comments.splice(index,1);
+              this.setState({comments:this.state.comments});
+              let object = {category:this.state.id,article:article, comments:this.state.comments,likes:this.state.likes}
+              let _this =this;
+              fetch(`/comments/${this.state.id}/${article}`,{
+                  method:'PUT',
+                  headers: {
+                      "Content-type": "application/json",
+                      'Accept': 'application/json'
+                  },
+                  body: JSON.stringify(object)
+              }).then(response => response.json()).then(data =>{
+                  //console.log(data);
+                  if(!data.success){
+                      alert(data.message);
+
+                  }
+              })
+          }
+      }
+
+    }
+
 
 
     render() {
-        console.log("All data",this.state.allData);
-
-
+        console.log("loc loc loc",this.props.location);
+      // console.log("All data",this.state);
        // console.log("iii" ,i);
         //console.log("comments array",this.state.comments);
         const markdownInstruction = this.state.aboutMe;
@@ -588,7 +685,7 @@ export default class Child extends React.Component{
                                 ?
 
                                 <div>
-                                    <h3>Please select an item.</h3>
+                                    <h3 style={{color:"deeppink"}}>Please select an item.</h3>
                                     <div>
                                         {
                                             this.state.role === "admin" ?
@@ -630,10 +727,11 @@ export default class Child extends React.Component{
                                                                     article: el
                                                                 }
                                                             }} onClick={() => this.handleArticleClick(el.item)}
+                                                                  className={"articleNames"}
                                                             >
                                                                 {
                                                                     el.image?
-                                                                        <img src={require(`./data/${this.state.id}${el.item.replace(/\s/g, '')}.jpg`)}
+                                                                        <img src={require(`.../public/images/${this.state.id}${el.item.replace(/\s/g, '')}.jpg`)}
                                                                              onError={(ev)=> ev.target.src = img}
                                                                              className={"column"} key={`image${el.item}${index}`}
                                                                              width="200" height="200" style={{backgroundColor: "grey"}}
@@ -648,11 +746,12 @@ export default class Child extends React.Component{
 
                                                                 }
                                                                 <div className={"column"} key={`${el.item}${index}`}>
-                                                                    <p>
-                                                                        <span className={"itemHeading"}>Item :</span>
+                                                                    <p >
+                                                                        <span className={"itemHeading"}>Item:</span>
                                                                         <span className={"itemName"}>{el.item}</span>
                                                                     </p>
-                                                                    <p>
+
+                                                                    <p >
                                                                         <span className={"itemHeading"}>Sub-category:</span>
                                                                         <span className={"itemName"}>{el["sub-category"]}</span>
                                                                     </p>
@@ -662,8 +761,8 @@ export default class Child extends React.Component{
                                                                     </p>
 
                                                                     <p>
-                                                                        <span><FontAwesomeIcon icon={faThumbsUp} size={"1x"}/></span>
-                                                                        <span>
+                                                                        <span className={"itemHeading"}><FontAwesomeIcon icon={faThumbsUp} size={"1x"}/>:</span>
+                                                                        <span className={"itemName"}>
                                                                              {
                                                                                  this.state.allData.length > 0 ?
                                                                                      this.state.allData.find((article,index,array)=>{
@@ -701,13 +800,17 @@ export default class Child extends React.Component{
                                                            <button onClick={()=>this.goBack()}>Back</button>
                                                            <h3>{props.match.params.topicId}</h3>
                                                            <div>
-                                                               <div style={{overflow:'hidden',minHeight:330,maxWidth:200,minWidth:50,width:10,float:"left",
-                                                               position:"fixed",paddingLeft:40  }}>
-                                                               <FontAwesomeIcon icon={faThumbsUp} size={"2x"}/> <hr/>
-                                                               {this.state.likes.length}
+
+                                                               <div className={"mobileLikeView"}>
+                                                                   <FontAwesomeIcon icon={faThumbsUp}  size={"2x"}
+                                                                                    onClick={()=> this.handleLike(this.props.location.pathname.split("/")[2])}
+                                                                                    color={this.state.liked? "blue":"black"}
+
+                                                                   />
+                                                                   <hr/>
+                                                                   {this.state.likes.length}
                                                                </div>
-                                                               <div id="rawHtml" className="language-html"
-                                                                    style={{overflow: 'auto',minHeight:330,maxWidth:1000,minWidth:200,marginLeft:200}}>
+                                                               <div id="rawHtml" className="language-html mobileArticleView">
                                                                    <ReactCommonmark source= {this.state.navLinks.find((element, index, arryay) =>
                                                                    {return element.category === this.state.id
                                                                    }).items.find((item, index, array) => {return item.item.replace(/\s/g, '') === props.match.params.topicId
@@ -717,17 +820,17 @@ export default class Child extends React.Component{
                                                                </div>
                                                            </div>
                                                            <div>
-                                                               <div style={{padding:5}}>
-                                                                   <FontAwesomeIcon icon={faThumbsUp} size={"2x"}
-                                                                                onClick={()=> this.handleLike(props.location.state.article.item)}
-                                                                                color={this.state.liked? "blue":"black"}
+                                                               {/*<div style={{padding:5}}>*/}
+                                                               {/*    <FontAwesomeIcon icon={faThumbsUp} size={"2x"}*/}
+                                                               {/*                 onClick={()=> this.handleLike(props.location.state.article.item)}*/}
+                                                               {/*                 color={this.state.liked? "blue":"black"}*/}
 
-                                                                   />
-                                                               </div>
+                                                               {/*    />*/}
+                                                               {/*</div>*/}
 
-                                                               <div style={{width:800,margin:"0 auto"}}>
+                                                               <div className={"commentDiv"} >
                                                                    {this.state.comments.map((el,index,ar)=>{
-                                                                       return <div className="commentList">
+                                                                       return <div className="commentList" key={`articleDiv${index}${el.name}`}>
                                                                            <div className="media mb-3">
                                                                                <img
                                                                                    className="mr-3 bg-light rounded"
@@ -738,16 +841,23 @@ export default class Child extends React.Component{
                                                                                />
 
                                                                                <div className="media-body p-2 shadow-sm rounded bg-light border">
-                                                                                   <small className="float-right text-muted">{new Date(el.date).toLocaleTimeString()}</small>
+                                                                                   <small className="float-right text-muted">{new Date(el.date).toLocaleDateString()}</small>
                                                                                    <h6 className="mt-0 mb-1 text-muted">{el.name}</h6>
                                                                                    {el.comment}
                                                                                </div>
+                                                                               {this.props.user !== null ?
+                                                                                   this.props.user.role === "admin" || this.props.user.googleId === el.profileId
+                                                                                   ?
+                                                                                       <div className={"ml-3"}>
+                                                                                   <button onClick={()=>this.deleteComment(index,props.match.params.topicId)}>
+                                                                                       Delete</button>
+                                                                                       </div> :
+                                                                                    null
+                                                                                   :
+                                                                                   null
+                                                                               }
+
                                                                            </div>
-
-
-                                                                       {/*    <textarea key={`comment${index}${el.googleId}`} readOnly >*/}
-                                                                       {/*        {el.comment}*/}
-                                                                       {/*</textarea>*/}
                                                                        </div>
                                                                    })}
                                                                    <br/>
@@ -756,6 +866,7 @@ export default class Child extends React.Component{
                                                                              onChange={(e)=>this.handleChange(e)} name={"comment"}
                                                                              value={this.state.comment}
                                                                    />
+                                                                   <br/>
 
                                                                    <button onClick={()=>this.addComment(props.match.params.topicId)}>Add comment</button>
 
